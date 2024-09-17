@@ -1,56 +1,54 @@
-/*
-Package cache implements an in-memory [templ] component cache. This may offer performance
-improvements for application with slow or deeply-nested components. To use,
-create an instance of the cache and wrap the desired component:
-
-	var cache = NewCache()
-
-	templ MyPage() {
-		@cache("my_key") {
-			@ExpensiveComponent()
-		}
-	}
-
-# Details
-
-The rendered component will be cached and associated with the given key. The key should
-be unique for the wrapped component. Any string can be used, so consider deriving
-the key from parameters the component depends on. For example:
-
-	templ CheckoutPage(user_id int) {
-		@cache(fmt.Sprintf("item_list-%d", user_id)) {
-			@ItemList(user_id)
-		}
-	}
-
-The cache defaults to 64k of storage and a 1 minute time-to-live (TTL) foritems. Once the
-storage limit is reached, the least recently used items will be deleted. When a cached item
-expires, it will be re-rendered when next needed. The storage and TTL are configurable when
-the cache is created by including the [WithTTL] or [WithMaxMemory] options. The TTL is also
-settable at the component level in the template as an override:
-
-	// Set memory and default TTL
-	var cache = NewCache(WithMaxMemory(512000), WithTTL(5*time.Minute))
-
-	templ Homepage() {
-		@cache("menu") {
-			This will be cached for 5 minutes.
-		}
-
-		@cache("stock-quote", WithTTL(30*time.Second)) {
-			This is rerendered every 30 seconds.
-		}
-	}
-
-The cache has functions for use outside of a template to access stats, reset, disable, etc.
-To use these functions, first obtain a component instance with any key:
-
-	cacheCtl := cache("")              // any key works
-	cacheCtl.Remove("key_to_remove")   // manually remove an item from the cache
-
-Cache instances (created with [NewCache]) are independent. They don't share any memory and may
-have different settings.
-*/
+// Package cache implements an in-memory [templ] component cache. This may offer performance
+// improvements for applications with slow or deeply-nested components. To use,
+// create an instance of the cache and wrap the desired component:
+//
+//	var cache = NewCache()
+//
+//	templ MyPage() {
+//		@cache("my_key") {
+//			@ExpensiveComponent()
+//		}
+//	}
+//
+// # Details
+//
+// The rendered component will be cached and associated with the given key. The key should
+// be unique for the wrapped component. Any string can be used, so consider deriving
+// the key from parameters the component depends on. For example:
+//
+//	templ CheckoutPage(user_id int) {
+//		@cache(fmt.Sprintf("item_list-%d", user_id)) {
+//			@ItemList(user_id)
+//		}
+//	}
+//
+// The cache defaults to 64k of storage and a 1 minute time-to-live (TTL) for items. Once the
+// storage limit is reached, the least recently used items will be deleted. When a cached item
+// expires, it will be re-rendered when next needed. The storage and TTL are configurable when
+// the cache is created by including the [WithTTL] or [WithMaxMemory] options. The TTL is also
+// settable at the component level in the template as an override:
+//
+//	// Set memory and default TTL
+//	var cache = NewCache(WithMaxMemory(512000), WithTTL(5*time.Minute))
+//
+//	templ Homepage() {
+//		@cache("menu") {
+//			This will be cached for 5 minutes.
+//		}
+//
+//		@cache("stock-quote", WithTTL(30*time.Second)) {
+//			This is rerendered every 30 seconds.
+//		}
+//	}
+//
+// The cache has functions for use outside of a template to access stats, reset, disable, etc.
+// To use these functions, first obtain a component instance with any key:
+//
+//	cacheCtl := cache("")              // any key works
+//	cacheCtl.Remove("key_to_remove")   // manually remove an item from the cache
+//
+// Cache instances (created with [NewCache]) are independent. They don't share any memory and may
+// have different settings.
 package cache
 
 import (
