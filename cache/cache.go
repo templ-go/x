@@ -22,7 +22,7 @@
 //		}
 //	}
 //
-// The cache defaults to 64k of storage and a 1 minute time-to-live (TTL) for items. Once the
+// The cache defaults to 64MB of storage and a 5 minute time-to-live (TTL) for items. Once the
 // storage limit is reached, the least recently used items will be deleted. When a cached item
 // expires, it will be re-rendered when next needed. The storage and TTL are configurable when
 // the cache is created by including the [WithTTL] or [WithMaxMemory] options. The TTL is also
@@ -61,8 +61,8 @@ import (
 	"github.com/a-h/templ"
 )
 
-const defaultTTL = time.Duration(time.Minute)
-const defaultMem = 64 * 1024
+const defaultTTL = time.Duration(5 * time.Minute)
+const defaultMem = 64 * 1024 * 1024
 
 // Component is the cache component for use in templates.
 type Component struct {
