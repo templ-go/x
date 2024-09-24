@@ -186,7 +186,6 @@ func (c Component) Render(ctx context.Context, w io.Writer) error {
 	// Get children.
 	children := templ.GetChildren(ctx)
 	ctx = templ.ClearChildren(ctx)
-
 	if children == nil {
 		return nil
 	}
