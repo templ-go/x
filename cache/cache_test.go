@@ -137,7 +137,7 @@ func TestReset(t *testing.T) {
 func TestMaxMemory(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache()
+	cache = NewCache(WithMaxMemory(64 * 1024))
 	ctl := cache("")
 
 	large := strings.Repeat("A", 50000)
@@ -155,14 +155,25 @@ func TestMaxMemory(t *testing.T) {
 
 	Outer("2", large).Render(ctx, io.Discard)
 	equals(t, 2*50025, ctl.Stats().UsedMemory)
+}
 
-	// Unlimited
-	cache = NewCache(WithMaxMemory(0))
-	ctl = cache("")
+func TestDefaultMemory(t *testing.T) {
+	ctx := context.Background()
+	cache = NewCache()
+	ctl := cache("")
 
-	large = strings.Repeat("A", 500000)
+	large := strings.Repeat("A", 30000000)
 	Outer("1", large).Render(ctx, io.Discard)
-	equals(t, 500025, ctl.Stats().UsedMemory)
+	equals(t, 30000025, ctl.Stats().UsedMemory)
+
+	Outer("2", large).Render(ctx, io.Discard)
+	equals(t, 60000050, ctl.Stats().UsedMemory)
+
+	// This will push over the 64MB limit and evict
+	// one ~30MB string.
+	small := strings.Repeat("A", 10000000)
+	Outer("3", small).Render(ctx, io.Discard)
+	equals(t, 40000050, ctl.Stats().UsedMemory)
 }
 
 func TestLRUOrder(t *testing.T) {
@@ -216,7 +227,7 @@ func TestConcurrency(t *testing.T) {
 	// t.Skip()
 	ctx := context.Background()
 
-	cache = NewCache()
+	cache = NewCache(WithMaxMemory(64 * 1024))
 	ctl := cache("")
 
 	var wg sync.WaitGroup
