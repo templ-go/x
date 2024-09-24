@@ -106,33 +106,28 @@ func New(opts ...Option) ComponentBuilder {
 }
 
 // WithTTL sets the default expiration duration for the cache,
-// or the expiration for an individual component. If the duration
-// is 0 then there is no expiration.
+// or the expiration for an individual component.
 func WithTTL(d time.Duration) Option {
 	return func(c *Component) {
-		if d == 0 {
-			d = 100 * 365 * 24 * time.Hour
-		}
-
 		c.ttl = d
 	}
 }
 
-// WithMaxMemory sets the maximum memory used for the cache. Note
-// that this will be ignored when set on individual components. If the
-// size is 0 then there is no memory limit.
-func WithMaxMemory(maxMem int) Option {
+// WithMaxMemory sets the maximum memory (in bytes) used for the cache.
+// Note that this will be ignored when set on individual components. If
+// the size is 0 then there is no memory limit.
+func WithMaxMemory(maxBytes int) Option {
 	return func(c *Component) {
 		// This can't be changed after initialization
 		if c.initialized {
 			return
 		}
 
-		if maxMem == 0 {
-			maxMem = math.MaxInt
+		if maxBytes == 0 {
+			maxBytes = math.MaxInt
 		}
 
-		c.lru = newLRU(maxMem)
+		c.lru = newLRU(maxBytes)
 	}
 }
 
