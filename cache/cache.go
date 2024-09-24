@@ -193,7 +193,6 @@ func (c Component) Render(ctx context.Context, w io.Writer) error {
 	// Render children to a buffer.
 	var buf bytes.Buffer
 	err := children.Render(ctx, &buf)
-
 	if err != nil {
 		return err
 	}
