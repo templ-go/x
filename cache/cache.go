@@ -178,8 +178,7 @@ func (c *Component) Reset() {
 
 // Render will render child components, using cached data and caching results as needed.
 func (c Component) Render(ctx context.Context, w io.Writer) error {
-	cc, isCached := c.lru.get(c.key)
-	if isCached {
+	if cc, isCached := c.lru.get(c.key); isCached {
 		_, err := w.Write(cc)
 		return err
 	}
