@@ -2,7 +2,7 @@
 // improvements for applications with slow or deeply-nested components. To use,
 // create an instance of the cache and wrap the desired component:
 //
-//	var cache = NewCache()
+//	var cache = New()
 //
 //	templ MyPage() {
 //		@cache("my_key") {
@@ -29,7 +29,7 @@
 // settable at the component level in the template as an override:
 //
 //	// Set memory and default TTL
-//	var cache = NewCache(WithMaxMemory(512000), WithTTL(5*time.Minute))
+//	var cache = New(WithMaxMemory(512000), WithTTL(5*time.Minute))
 //
 //	templ Homepage() {
 //		@cache("menu") {
@@ -47,7 +47,7 @@
 //	cacheCtl := cache("")              // any key works
 //	cacheCtl.Remove("key_to_remove")   // manually remove an item from the cache
 //
-// Cache instances (created with [NewCache]) are independent. They don't share any memory and may
+// Cache instances (created with [New]) are independent. They don't share any memory and may
 // have different settings.
 package cache
 
@@ -79,10 +79,10 @@ type Option func(c *Component)
 // See the package documentation for usage examples.
 type ComponentBuilder func(key string, opts ...Option) Component
 
-// NewCache creates a cache and returns a builder function
+// New creates a cache and returns a builder function
 // that can be used in templates. It accepts zero or more functional
 // options (WithTTL(), WithMaxMemory()).
-func NewCache(opts ...Option) ComponentBuilder {
+func New(opts ...Option) ComponentBuilder {
 	base := Component{
 		ttl: defaultTTL,
 		lru: newLRU(defaultMem),

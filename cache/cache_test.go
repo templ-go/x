@@ -18,7 +18,7 @@ import (
 func TestCorrectness(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache(WithTTL(10 * time.Millisecond))
+	cache = New(WithTTL(10 * time.Millisecond))
 
 	// Does it render what we expect?
 	var buf bytes.Buffer
@@ -62,7 +62,7 @@ func TestCorrectness(t *testing.T) {
 func TestEviction(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache(WithMaxMemory(100), WithTTL(50*time.Millisecond))
+	cache = New(WithMaxMemory(100), WithTTL(50*time.Millisecond))
 	ctl := cache("")
 
 	Outer("A", "AAA").Render(ctx, io.Discard)
@@ -84,7 +84,7 @@ func TestEviction(t *testing.T) {
 func TestDisable(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache()
+	cache = New()
 	ctl := cache("")
 	ctl.Disable(true)
 
@@ -113,7 +113,7 @@ func TestDisable(t *testing.T) {
 func TestReset(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache()
+	cache = New()
 	ctl := cache("")
 
 	tRender := timeIt(func() { Slow("S").Render(ctx, io.Discard) })
@@ -137,7 +137,7 @@ func TestReset(t *testing.T) {
 func TestMaxMemory(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache(WithMaxMemory(64 * 1024))
+	cache = New(WithMaxMemory(64 * 1024))
 	ctl := cache("")
 
 	large := strings.Repeat("A", 50000)
@@ -147,7 +147,7 @@ func TestMaxMemory(t *testing.T) {
 	Outer("2", large).Render(ctx, io.Discard)
 	equals(t, 50025, ctl.Stats().UsedMemory)
 
-	cache = NewCache(WithMaxMemory(110000))
+	cache = New(WithMaxMemory(110000))
 	ctl = cache("")
 
 	Outer("1", large).Render(ctx, io.Discard)
@@ -159,7 +159,7 @@ func TestMaxMemory(t *testing.T) {
 
 func TestDefaultMemory(t *testing.T) {
 	ctx := context.Background()
-	cache = NewCache()
+	cache = New()
 	ctl := cache("")
 
 	large := strings.Repeat("A", 30000000)
@@ -179,7 +179,7 @@ func TestDefaultMemory(t *testing.T) {
 func TestLRUOrder(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache(WithMaxMemory(110))
+	cache = New(WithMaxMemory(110))
 
 	ctl := cache("")
 
@@ -227,7 +227,7 @@ func TestConcurrency(t *testing.T) {
 	// t.Skip()
 	ctx := context.Background()
 
-	cache = NewCache(WithMaxMemory(64 * 1024))
+	cache = New(WithMaxMemory(64 * 1024))
 	ctl := cache("")
 
 	var wg sync.WaitGroup
@@ -267,7 +267,7 @@ func TestConcurrency(t *testing.T) {
 func TestLRUTTL(t *testing.T) {
 	ctx := context.Background()
 
-	cache = NewCache(WithTTL(200 * time.Millisecond))
+	cache = New(WithTTL(200 * time.Millisecond))
 
 	ctl := cache("")
 	equals(t, 0, ctl.Stats().UsedMemory)

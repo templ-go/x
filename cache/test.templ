@@ -2,31 +2,31 @@ package cache
 
 import "time"
 
-var cache = NewCache()
+var cache = New()
 
 templ Outer(key, val string) {
-    @cache(key) {
-        @Inner(val)
-    }
+	@cache(key) {
+		@Inner(val)
+	}
 }
 
 templ OuterTTL(key, val string, ttl time.Duration) {
-    @cache(key, WithTTL(ttl)) {
-        @Inner(val)
-    }
+	@cache(key, WithTTL(ttl)) {
+		@Inner(val)
+	}
 }
 
 templ Inner(label string) {
-{ label }
+	{ label }
 }
 
 func delayPrint(s string) string {
-    time.Sleep(200*time.Millisecond)
-    return s
+	time.Sleep(200 * time.Millisecond)
+	return s
 }
 
 templ Slow(key string) {
-    @cache(key) {
-        Slow: {delayPrint("boo")}
-    }
+	@cache(key) {
+		Slow: { delayPrint("boo") }
+	}
 }
